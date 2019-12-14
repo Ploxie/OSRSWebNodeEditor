@@ -1,28 +1,26 @@
 package org.ploxie.pathfinder;
 
+import org.ploxie.pathfinder.util.Position;
+import org.ploxie.pathfinder.web.Web;
 import org.ploxie.pathfinder.web.WebNode;
 import org.ploxie.pathfinder.web.WebNodeConnection;
+import sun.rmi.runtime.Log;
 
 import java.util.*;
 
 public class AStarPathfinder implements Pathfinder {
 
     protected PriorityQueue<WebNode> openList;
-    protected Set<WebNode> closedSet;
+    public HashSet<WebNode> closedSet;
 
+    protected Web web;
     protected WebNode end;
 
-    public AStarPathfinder() {
-        openList = new PriorityQueue<>(Comparator.comparingDouble(WebNode::getTotalCost));
-        closedSet = new HashSet<>();
-    }
-
     @Override
-    public Collection<WebNode> findPath(WebNode start, WebNode end) {
+    public WebPath findPath(WebNode start, WebNode end) {
         this.end = end;
-
-        openList.clear();
-        closedSet.clear();
+        openList = new PriorityQueue<>(end.distanceTo(start),Comparator.comparingDouble(WebNode::getTotalCost));
+        closedSet = new HashSet<>();
 
         //openList.add(getNode(start.getX(),start.getY(),start.getPlane()));
 
@@ -50,22 +48,23 @@ public class AStarPathfinder implements Pathfinder {
             }
 
             if (!openList.contains(target)) {
-                double g = node.getGCost();
-                double dist = connection.getHeuristic();
+                double cost = node.distanceTo(target);
+                double g = node.getGCost()+cost;
+                target.calculateHeuristic(end);
+
                 target.setParent(node);
-                target.setGCost(g + dist);
+                target.setGCost(g);
 
                 openList.add(target);
-
                 continue;
             }
 
-            double g = node.getGCost();
-            double dist = connection.getHeuristic();
+            double cost = node.distanceTo(target);
+            double g = node.getGCost() + cost;
 
-            if ((g + dist) < target.getGCost()) {
+            if ((g) < target.getGCost()) {
                 target.setParent(node);
-                target.setGCost(g + dist);
+                target.setGCost(g + cost);
 
                 openList.remove(target);
                 openList.add(target);
@@ -73,8 +72,9 @@ public class AStarPathfinder implements Pathfinder {
         }
     }
 
-    protected Collection<WebNode> backtracePath(WebNode node) {
-        List<WebNode> path = new ArrayList<WebNode>();
+    protected WebPath backtracePath(WebNode node) {
+
+        WebPath path = new WebPath();
         path.add(node);
         WebNode parent;
         while ((parent = node.getParent()) != null) {

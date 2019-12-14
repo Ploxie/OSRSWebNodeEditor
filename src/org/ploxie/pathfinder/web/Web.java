@@ -1,5 +1,7 @@
 package org.ploxie.pathfinder.web;
 
+import org.ploxie.pathfinder.util.Position;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -30,6 +32,7 @@ public class Web extends HashSet<WebNode>{
     }
 
     public WebNode getNode(int x, int y, int plane) {
+
         WebNode nnode = new WebNode(x,y,plane);
         for(WebNode node : this) {
             if(node.equals(nnode)) {
@@ -37,6 +40,10 @@ public class Web extends HashSet<WebNode>{
             }
         }
         return nnode;
+    }
+
+    public WebNode getNode(Position position){
+        return getNode(position.getX(), position.getY(), position.getZ());
     }
 
     public boolean removeWebNode(WebNode node) {

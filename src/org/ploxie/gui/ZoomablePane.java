@@ -1,21 +1,11 @@
 package org.ploxie.gui;
 
-import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.geom.AffineTransform;
-import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.net.URL;
 
-/**
- * @author Thanasis1101
- * @version 1.0
- */
-public class ZoomablePane extends JPanel implements MouseWheelListener, MouseListener, MouseMotionListener {
-
-    protected BufferedImage image;
+public class ZoomablePane extends JPanel implements MouseWheelListener, MouseListener, MouseMotionListener, KeyListener {
 
     protected double zoomFactor = 1;
     private double prevZoomFactor = 1;
@@ -29,36 +19,20 @@ public class ZoomablePane extends JPanel implements MouseWheelListener, MouseLis
 
     private Point cursorPos = new Point(0, 0);
 
-    public ZoomablePane(String urlPath) {
-        try {
-            URL url = new URL(urlPath);
-            this.image = ImageIO.read(url);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
 
-
+    public ZoomablePane(double xOffset, double yOffset) {
         initComponent();
-
-        xOffset = -13065.2583;
-        yOffset = -5343.9743;
-        zoomFactor = 2.1435;
-        prevZoomFactor = 2.1435;
 
         transform.setToTranslation(xOffset, yOffset);
         transform.scale(zoomFactor, zoomFactor);
-    }
-
-    public ZoomablePane(BufferedImage image) {
-        this.image = image;
-        initComponent();
-
     }
 
     private void initComponent() {
         addMouseWheelListener(this);
         addMouseMotionListener(this);
         addMouseListener(this);
+        addKeyListener(this);
+
     }
 
     public Point getCursorPos() {
@@ -146,4 +120,18 @@ public class ZoomablePane extends JPanel implements MouseWheelListener, MouseLis
 
     }
 
+    @Override
+    public void keyTyped(KeyEvent e) {
+
+    }
+
+    @Override
+    public void keyPressed(KeyEvent e) {
+        System.out.println(e.getKeyCode());
+    }
+
+    @Override
+    public void keyReleased(KeyEvent e) {
+
+    }
 }

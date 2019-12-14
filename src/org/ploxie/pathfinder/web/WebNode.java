@@ -1,12 +1,11 @@
 package org.ploxie.pathfinder.web;
 
+import org.ploxie.pathfinder.collision.Region;
+import org.ploxie.pathfinder.util.Position;
+
 import java.util.LinkedList;
 
-public class WebNode{
-
-    private final int x;
-    private final int y;
-    private final int plane;
+public class WebNode extends Position {
 
     private final LinkedList<WebNodeConnection> connections;
 
@@ -15,17 +14,25 @@ public class WebNode{
     private double gCost;
     private double heuristic;
 
-    public WebNode(int x, int y, int plane) {
-        this.x = x;
-        this.y = y;
-        this.plane = plane;
+    private Position regionPosition;
 
-        this.connections = new LinkedList<WebNodeConnection>();
+    public WebNode(int x, int y, int plane) {
+        super(x, y, plane);
+        this.regionPosition = Region.worldToRegionPosition(this);
+
+        this.connections = new LinkedList<>();
+    }
+
+    public WebNode(Position position) {
+        super(position.getX(), position.getY(), position.getZ());
+        this.regionPosition = Region.worldToRegionPosition(this);
+
+        this.connections = new LinkedList<>();
     }
 
     protected boolean addConnection(WebNode node) {
         WebNodeConnection connection = new WebNodeConnection(this, node);
-        if(connections.contains(connection)) {
+        if (connections.contains(connection)) {
             return false;
         }
         return addConnection(connection);
@@ -39,7 +46,7 @@ public class WebNode{
         return connections.contains(connection) && connections.remove(connection);
     }
 
-    public boolean isConnectedTo(WebNode target){
+    public boolean isConnectedTo(WebNode target) {
         return getConnection(target) != null;
     }
 
@@ -53,34 +60,18 @@ public class WebNode{
     }
 
     public int distanceTo(WebNode target) {
-        int distX = Math.abs(getX()-target.getX());
-        int distY = Math.abs(getY()-target.getY());
-        int distP = Math.abs(getPlane()-target.getPlane());
-        return distX + distY + distP;
+        int distX = Math.abs(getX() - target.getX());
+        int distY = Math.abs(getY() - target.getY());
+        return distX + distY;
     }
 
-    public int getX() {
-        return x;
-    }
-
-    public int getY() {
-        return y;
-    }
-
-    public int getPlane() {
-        return plane;
-    }
-
-    public void setParent(WebNode parent) {
-        this.parent = parent;
-    }
-
-    public WebNode getParent() {
-        return parent;
+    public double calculateHeuristic(WebNode goal, double stepCost) {
+        heuristic = distanceTo(goal) * stepCost;
+        return heuristic;
     }
 
     public double calculateHeuristic(WebNode goal) {
-        return distanceTo(goal);
+        return calculateHeuristic(goal, 1);
     }
 
     public void setGCost(double cost) {
@@ -92,27 +83,27 @@ public class WebNode{
     }
 
     public double getTotalCost() {
-        return gCost+heuristic;
+        return gCost + heuristic;
     }
 
-    public LinkedList<WebNodeConnection> getConnections(){
+    public LinkedList<WebNodeConnection> getConnections() {
         return connections;
     }
 
-    @Override
-    public int hashCode() {
-        return (x ^ y ^ plane);
+    public Position getRegionPosition() {
+        return this.regionPosition;
     }
 
-    @Override
-    public String toString() {
-        return "("+x+", "+y+", "+plane+")";
+    public int getPlane() {
+        return getZ();
     }
 
-    @Override
-    public boolean equals(Object obj) {
-        WebNode other = (WebNode) obj;
-        return this.getX() == other.getX() && this.getY() == other.getY() && this.getPlane() == other.getPlane();
+    public void setParent(WebNode parent) {
+        this.parent = parent;
+    }
+
+    public WebNode getParent() {
+        return parent;
     }
 
 }

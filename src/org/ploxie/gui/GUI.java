@@ -4,6 +4,9 @@ import org.ploxie.pathfinder.web.WebLoader;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import java.awt.*;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.io.File;
 
 public class GUI extends JFrame {
@@ -25,26 +28,42 @@ public class GUI extends JFrame {
 
         setSize(800, 600);
         setTitle("Web Editor");
+        setResizable(true);
 
-        JMenuBar menuBar = new JMenuBar();
+        /*JMenuBar menuBar = new JMenuBar();
         JMenu file = new JMenu("File");
         JMenuItem save = new JMenuItem("Save");
         save.addActionListener(e -> saveAs());
         JMenuItem load = new JMenuItem("Open");
-        load.addActionListener(e -> load());
+        load.addActionListener(e -> load());*/
 
-        file.add(save);
+        /*file.add(save);
         file.add(load);
         menuBar.add(file);
 
         mapViewer = new WorldMapViewer("https://cdn.runescape.com/assets/img/external/oldschool/2019/newsposts/2019-01-10/osrs_world_map_jan4_2019.png");
 
         setJMenuBar(menuBar);
-        add(mapViewer);
+        add(mapViewer);*/
+
+        /*JPanel panel = new JPanel(){
+            @Override
+            public void paint(Graphics g) {
+                super.paint(g);
+
+                g.drawImage(grid.images[0][1], 0,0, grid.images[0][1].getWidth(), grid.images[0][1].getHeight(), null);
+            }
+        };
+
+        add(panel);*/
+
+        WorldMapViewer viewer = new WorldMapViewer(0,0);
+        add(viewer);
+
     }
 
 
-    private void load() {
+    /*private void load() {
         JFileChooser fileChooser = new JFileChooser();
         FileNameExtensionFilter filter = new FileNameExtensionFilter("Web Data File (*.web)", "web");
         fileChooser.setFileFilter(filter);
@@ -64,7 +83,7 @@ public class GUI extends JFrame {
             File file = fileChooser.getSelectedFile();
             WebLoader.saveWebToFile(mapViewer.web, file);
         }
-    }
+    }*/
 
     public static void main(String[] args) {
         GUI gui = new GUI();
