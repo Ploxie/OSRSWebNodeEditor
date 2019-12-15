@@ -3,37 +3,36 @@ package org.ploxie.gui;
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
-import java.net.URL;
 
-public class MapTile {
+public class MapChunk {
 
     private BufferedImage image;
     private Rectangle rectangle;
-    private MapTileGrid grid;
+    private MapChunkGrid grid;
     private int plane;
     private int zoom;
     private int x;
     private int y;
 
-    public MapTile(MapTileGrid grid, int plane, int zoom, int x, int y){
+    public MapChunk(MapChunkGrid grid, int plane, int zoom, int x, int y){
         this.grid = grid;
         this.plane = plane;
         this.zoom = zoom;
         this.x = x;
         this.y = y;
 
-        this.rectangle = new Rectangle(x * MapTileGrid.TILE_SIZE, (y*MapTileGrid.TILE_SIZE), MapTileGrid.TILE_SIZE, MapTileGrid.TILE_SIZE);
+        this.rectangle = new Rectangle(x * MapChunkGrid.TILE_SIZE, (y* MapChunkGrid.TILE_SIZE), MapChunkGrid.TILE_SIZE, MapChunkGrid.TILE_SIZE);
     }
 
     public void load(){
         int height = grid.getHeight(zoom);
-
         new Thread(() -> {
             try {
                 //URL url = new URL("https://raw.githubusercontent.com/Explv/osrs_map_full_2019_09_13/master/"+plane+"/"+zoom+"/"+x+"/"+(height- 1- y)+".png");
-
-                this.image = ImageIO.read(url);
+                File file = new File("C:\\Users\\Ploxie\\Documents\\MapData\\"+plane+"/"+zoom+"/"+x+"/"+(height- 1- y)+".png");
+                this.image = ImageIO.read(file);
             } catch (IOException e) {
                 e.printStackTrace();
             }

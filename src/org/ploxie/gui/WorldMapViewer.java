@@ -7,25 +7,27 @@ import java.util.List;
 
 public class WorldMapViewer extends ZoomablePane {
 
-    private MapTileGrid tileGrid;
+    private MapChunkGrid chunkGrid;
+    private MapOverlay overlay;
 
     private int zoom = 3;
+    private int plane = 0;
 
-    private boolean drawTiles = false;
-    private boolean drawCoords = false;
+    private boolean drawChunks = true;
+    private boolean drawCoords = true;
 
     public WorldMapViewer(double xOffset, double yOffset) {
         super(xOffset, yOffset);
 
-        this.tileGrid = new MapTileGrid();
+        this.overlay = new MapOverlay(this);
+        addMouseMotionListener(overlay);
 
-        this.tileGrid.loadTiles(zoom, 0);
-
-        addKeyListener(this);
+        this.chunkGrid = new MapChunkGrid();
+        this.chunkGrid.loadTiles(zoom, plane);
     }
 
     @Override
-    public void paint(Graphics g) {
+    public void paintComponent(Graphics g) {
         Graphics2D g2 = (Graphics2D) g;
         g2.setRenderingHints(new RenderingHints(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON));
 
@@ -35,12 +37,11 @@ public class WorldMapViewer extends ZoomablePane {
         int xOffset = (int)getTransform().getTranslateX();
         int yOffset = (int)getTransform().getTranslateY();
         Rectangle viewport = new Rectangle(-xOffset, -yOffset, getWidth(),getHeight());
+        List<MapChunk> tiles = new ArrayList<>();
 
-        List<MapTile> tiles = new ArrayList<>();
-
-        for(int y = 0; y < tileGrid.getHeight(zoom);y++) {
-            for (int x = 0; x < tileGrid.getWidth(zoom); x++) {
-                MapTile tile = tileGrid.tiles[x][y];
+        for(int y = 0; y < chunkGrid.getHeight(zoom); y++) {
+            for (int x = 0; x < chunkGrid.getWidth(zoom); x++) {
+                MapChunk tile = chunkGrid.getTiles()[x][y];
                 Rectangle bounds = (Rectangle)tile.getRectangle().clone();
                 bounds.translate(xOffset, yOffset);
                 if(tile.getRectangle() == null){
@@ -55,38 +56,57 @@ public class WorldMapViewer extends ZoomablePane {
         }
 
         g2.setColor(Color.white);
-        for(MapTile tile : tiles){
+        for(MapChunk tile : tiles){
             if(tile.getImage() == null){
                 continue;
             }
             Rectangle bounds = tile.getRectangle();
-            int x = (tile.getX() * MapTileGrid.TILE_SIZE) + xOffset;
-            int y = (tile.getY() * MapTileGrid.TILE_SIZE) + yOffset;
-            g2.drawImage(tile.getImage(),x , y, MapTileGrid.TILE_SIZE , MapTileGrid.TILE_SIZE , null);
+            int x = (tile.getX() * MapChunkGrid.TILE_SIZE) + xOffset;
+            int y = (tile.getY() * MapChunkGrid.TILE_SIZE) + yOffset;
+            g2.drawImage(tile.getImage(),x , y, MapChunkGrid.TILE_SIZE , MapChunkGrid.TILE_SIZE , null);
 
-            if(drawTiles){
+            if(drawChunks){
                 g2.drawRect(bounds.x+xOffset, bounds.y+yOffset, (int)bounds.getWidth(), (int)bounds.getHeight());
             }
             if(drawCoords){
-                g2.drawString(tile.getX()+", "+tile.getY(), x + (MapTileGrid.TILE_SIZE / 2), y + (MapTileGrid.TILE_SIZE / 2));
+                g2.drawString(tile.getX()+", "+tile.getY(), x + (MapChunkGrid.TILE_SIZE / 2), y + (MapChunkGrid.TILE_SIZE / 2));
             }
         }
 
+        overlay.draw(g2);
+
+        g2.setColor(Color.white);
         g2.drawString(""+xOffset+", "+yOffset, 10, 15);
+        g2.drawString("Tiles: "+tiles.size(), 10, 30);
     }
 
     @Override
     public void mouseWheelMoved(MouseWheelEvent e) {
-        zoom += e.getWheelRotation();
 
-        if(zoom < 3){
-            zoom = 3;
-        }else if(zoom > 11){
-            zoom = 11;
-        }
+        double lastWidth = chunkGrid.getWidth(zoom);
+        double lastHeight = chunkGrid.getHeight(zoom);
 
-        this.tileGrid.loadTiles(zoom, 0);
+        double xRel = MouseInfo.getPointerInfo().getLocation().getX() - getLocationOnScreen().getX();
+        double yRel = MouseInfo.getPointerInfo().getLocation().getY() - getLocationOnScreen().getY();
+        zoom -= e.getWheelRotation();
+        zoom = Math.max(Math.min(zoom, 11), 3);
+        this.chunkGrid.loadTiles(zoom, plane);
 
+        double zoomDivX = chunkGrid.getWidth(zoom) / lastWidth;
+        double zoomDivY = chunkGrid.getHeight(zoom) / lastHeight;
+
+        xOffset = (zoomDivX) * (xOffset) + (1 - zoomDivX) * xRel;
+        yOffset = (zoomDivY) * (yOffset) + (1 - zoomDivY) * yRel;
+
+        transform.setToTranslation(xOffset, yOffset);
         repaint();
+    }
+
+    public MapChunkGrid getChunkGrid() {
+        return chunkGrid;
+    }
+
+    public int getZoom() {
+        return zoom;
     }
 }

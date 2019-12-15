@@ -26,7 +26,7 @@ public class GUI extends JFrame {
             e.printStackTrace();
         }
 
-        setSize(800, 600);
+        setSize(800, 800);
         setTitle("Web Editor");
         setResizable(true);
 
