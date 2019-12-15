@@ -6,9 +6,9 @@ import java.awt.event.MouseMotionListener;
 
 public class MapOverlay implements MouseMotionListener {
 
-    private WorldMapViewer mapViewer;
+    protected WorldMapViewer mapViewer;
 
-    private Point mousePosition;
+    protected Point mousePosition;
 
     private boolean drawHoveredTile = true;
     private boolean drawHoveredChunk = true;
@@ -45,34 +45,34 @@ public class MapOverlay implements MouseMotionListener {
         }
     }
 
-    private Point getWorldCoordinates(int x, int y){
+    protected Point getWorldCoordinates(int x, int y){
         double tilesPerChunk = getTilesPerChunk();
         return new Point(x+MapChunkGrid.OFFSET_X, MapChunkGrid.MAP_HEIGHT-(y-(int)tilesPerChunk) + MapChunkGrid.OFFSET_Y);
     }
 
-    private double getTilesPerChunk(){
+    protected double getTilesPerChunk(){
         double unitsPerPixel = mapViewer.getChunkGrid().getUnitsPerPixel(mapViewer.getZoom());
         return (mapViewer.getChunkGrid().TILE_SIZE * unitsPerPixel) / 4;
     }
 
-    private double getPixelsPerTile(){
+    protected double getPixelsPerTile(){
         double tilesPerChunk = getTilesPerChunk();
         return mapViewer.getChunkGrid().TILE_SIZE / tilesPerChunk;
     }
 
-    private Point getMapTileCoordinates(int x, int y){
+    protected Point getMapTileCoordinates(int x, int y){
         double pixelsPerTile = getPixelsPerTile();
         return new Point((int)(x/pixelsPerTile), (int)(y/pixelsPerTile));
     }
 
-    private Rectangle getHoveredTile(){
+    protected Rectangle getHoveredTile(){
         double pixelsPerTile = getPixelsPerTile();
         Point mapTileCoords = getMapTileCoordinates(mousePosition.x, mousePosition.y);
         Rectangle rect = new Rectangle(mapTileCoords.x * (int)pixelsPerTile, mapTileCoords.y * (int)pixelsPerTile, (int)pixelsPerTile, (int)pixelsPerTile);
         return rect;
     }
 
-    private MapChunk getHoveredChunk(){
+    protected MapChunk getHoveredChunk(){
         int x = (int)mousePosition.getX() / MapChunkGrid.TILE_SIZE;
         int y = (int)mousePosition.getY() / MapChunkGrid.TILE_SIZE;
 

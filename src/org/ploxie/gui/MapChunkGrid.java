@@ -1,5 +1,9 @@
 package org.ploxie.gui;
 
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
+
 public class MapChunkGrid {
 
     public static int MAP_WIDTH = 12544;
@@ -9,6 +13,11 @@ public class MapChunkGrid {
     public static int OFFSET_Y = -26625;
 
     private MapChunk[][] tiles;
+    public WorldMapViewer viewer;
+
+    public MapChunkGrid(WorldMapViewer viewer){
+        this.viewer = viewer;
+    }
 
     public void loadTiles(int zoom, int plane){
         int w = getWidth(zoom);
@@ -21,6 +30,25 @@ public class MapChunkGrid {
                 getTiles()[x][y] = new MapChunk(this, plane, zoom, x,  y);
             }
         }
+    }
+
+    public List<MapChunk> getChunksInViewport(Rectangle viewport, int zoom){
+
+        int minX = Math.max(0, viewport.x  / TILE_SIZE);
+        int maxX = Math.min((int)((viewport.x+viewport.getWidth()) / TILE_SIZE)+1,tiles.length);
+
+        int minY = Math.max(0, viewport.y / TILE_SIZE);
+        int maxY = Math.min((int)((viewport.y+viewport.getHeight()) / TILE_SIZE)+1, tiles[0].length);
+
+        List<MapChunk> list = new ArrayList<>();
+
+        for(int y = minY; y < maxY;y++){
+            for(int x = minX; x < maxX;x++){
+                list.add(tiles[x][y]);
+            }
+        }
+
+        return list;
     }
 
     public double getUnitsPerPixel(int zoom){

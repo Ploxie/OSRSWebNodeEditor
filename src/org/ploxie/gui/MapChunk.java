@@ -36,11 +36,27 @@ public class MapChunk {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+
+            grid.viewer.repaint();
         }).start();
     }
 
     public boolean isInside(Rectangle viewport){
-        return (!viewport.contains(rectangle.getMinX(), rectangle.getMinY()) && !viewport.contains(rectangle.getMaxX(), rectangle.getMinY()) && !viewport.contains(rectangle.getMaxX(), rectangle.getMaxY()) && !viewport.contains(rectangle.getMinX(), rectangle.getMaxY())) == false;
+
+        if(viewport.contains(rectangle.getMinX(), rectangle.getMinY())){
+            return true;
+        }
+        if(viewport.contains(rectangle.getMaxX(), rectangle.getMinY())){
+            return true;
+        }
+        if(viewport.contains(rectangle.getMaxX(), rectangle.getMaxY())){
+            return true;
+        }
+        if(viewport.contains(rectangle.getMinX(), rectangle.getMaxY())){
+            return true;
+        }
+        return false;
+        //return (!viewport.contains(rectangle.getMinX(), rectangle.getMinY()) && !viewport.contains(rectangle.getMaxX(), rectangle.getMinY()) && !viewport.contains(rectangle.getMaxX(), rectangle.getMaxY()) && !viewport.contains(rectangle.getMinX(), rectangle.getMaxY())) == false;
     }
 
     public Rectangle getRectangle(){
