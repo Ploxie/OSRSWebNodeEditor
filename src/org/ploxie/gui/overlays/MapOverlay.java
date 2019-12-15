@@ -1,53 +1,33 @@
-package org.ploxie.gui;
+package org.ploxie.gui.overlays;
+
+import org.ploxie.gui.Chunk;
+import org.ploxie.gui.ChunkGrid;
+import org.ploxie.gui.WorldMapViewer;
 
 import java.awt.*;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 
-public class MapOverlay implements MouseMotionListener {
+public abstract class MapOverlay implements MouseMotionListener, MouseListener {
 
     protected WorldMapViewer mapViewer;
 
     protected Point mousePosition;
 
-    private boolean drawHoveredTile = true;
-    private boolean drawHoveredChunk = true;
-    private boolean drawTileCoords = true;
-
     public MapOverlay(WorldMapViewer mapViewer){
         this.mapViewer = mapViewer;
         this.mousePosition = new Point(0,0);
+
+        mapViewer.addMouseMotionListener(this);
+        mapViewer.addMouseListener(this);
     }
 
-    public void draw(Graphics2D g){
-        if(drawHoveredTile) {
-            g.setColor(Color.GREEN);
-            Rectangle hoveredTile = getHoveredTile();
-            if (hoveredTile != null) {
-                g.drawRect(hoveredTile.x + (int) mapViewer.xOffset, hoveredTile.y + (int) mapViewer.yOffset, (int) hoveredTile.getWidth(), (int) hoveredTile.getHeight());
-            }
-        }
-
-        if(drawHoveredChunk) {
-            g.setColor(Color.GREEN);
-            MapChunk hoveredChunk = getHoveredChunk();
-            if (hoveredChunk != null) {
-                Rectangle bounds = hoveredChunk.getRectangle();
-                g.drawRect(bounds.x + (int) mapViewer.xOffset, bounds.y + (int) mapViewer.yOffset, (int) bounds.getWidth(), (int) bounds.getHeight());
-            }
-        }
-
-        if(drawTileCoords) {
-            g.setColor(Color.GREEN);
-            Point mapTileCoord = getMapTileCoordinates(mousePosition.x, mousePosition.y);
-            Point tileCoord = getWorldCoordinates(mapTileCoord.x, mapTileCoord.y);
-            g.drawString("Tile: ("+tileCoord.x+", "+tileCoord.y+")", 10, 40);
-        }
-    }
+    public abstract void draw(Graphics2D g);
 
     protected Point getWorldCoordinates(int x, int y){
         double tilesPerChunk = getTilesPerChunk();
-        return new Point(x+MapChunkGrid.OFFSET_X, MapChunkGrid.MAP_HEIGHT-(y-(int)tilesPerChunk) + MapChunkGrid.OFFSET_Y);
+        return new Point(x+ ChunkGrid.OFFSET_X, ChunkGrid.MAP_HEIGHT-(y-(int)tilesPerChunk) + ChunkGrid.OFFSET_Y);
     }
 
     protected double getTilesPerChunk(){
@@ -72,9 +52,9 @@ public class MapOverlay implements MouseMotionListener {
         return rect;
     }
 
-    protected MapChunk getHoveredChunk(){
-        int x = (int)mousePosition.getX() / MapChunkGrid.TILE_SIZE;
-        int y = (int)mousePosition.getY() / MapChunkGrid.TILE_SIZE;
+    protected Chunk getHoveredChunk(){
+        int x = (int)mousePosition.getX() / ChunkGrid.TILE_SIZE;
+        int y = (int)mousePosition.getY() / ChunkGrid.TILE_SIZE;
 
         if(mapViewer.getChunkGrid().getTiles().length <= x){
             return null;
@@ -93,8 +73,33 @@ public class MapOverlay implements MouseMotionListener {
 
     @Override
     public void mouseMoved(MouseEvent e) {
-        int x = (int)(-mapViewer.xOffset+e.getX());
-        int y = (int)(-mapViewer.yOffset+e.getY());
+        int x = (int)(-mapViewer.getxOffset()+e.getX());
+        int y = (int)(-mapViewer.getyOffset()+e.getY());
         this.mousePosition = new Point(x,y);
+    }
+
+    @Override
+    public void mouseClicked(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mousePressed(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mouseReleased(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mouseEntered(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mouseExited(MouseEvent e) {
+
     }
 }

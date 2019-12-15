@@ -1,14 +1,17 @@
 package org.ploxie.gui;
 
+import org.ploxie.gui.overlays.DebugOverlay;
+import org.ploxie.gui.overlays.MapOverlay;
+import org.ploxie.gui.overlays.NodeOverlay;
+
 import java.awt.*;
 import java.awt.event.MouseWheelEvent;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class WorldMapViewer extends ZoomablePane {
 
-    private MapChunkGrid chunkGrid;
+    private ChunkGrid chunkGrid;
     private MapOverlay debugOverlay;
     private NodeOverlay nodeOverlay;
 
@@ -20,18 +23,15 @@ public class WorldMapViewer extends ZoomablePane {
     private boolean drawChunks = true;
     private boolean drawCoords = true;
 
-    private List<MapChunk> chunks;
+    private List<Chunk> chunks;
 
     public WorldMapViewer(double xOffset, double yOffset) {
         super(xOffset, yOffset);
 
-        this.debugOverlay = new MapOverlay(this);
+        this.debugOverlay = new DebugOverlay(this);
         this.nodeOverlay = new NodeOverlay(this);
-        addMouseMotionListener(debugOverlay);
-        addMouseMotionListener(nodeOverlay);
-        addMouseListener(nodeOverlay);
 
-        this.chunkGrid = new MapChunkGrid(this);
+        this.chunkGrid = new ChunkGrid(this);
         this.chunkGrid.loadTiles(zoom, plane);
 
         this.chunks = new ArrayList<>();
@@ -45,8 +45,8 @@ public class WorldMapViewer extends ZoomablePane {
         int yOffset = (int)getTransform().getTranslateY();
         Rectangle viewport = new Rectangle(-xOffset, -yOffset, getWidth(),getHeight());
 
-        chunks = chunkGrid.getChunksInViewport(viewport, zoom);
-        for(MapChunk chunk : chunks){
+        chunks = chunkGrid.getChunksInViewport(viewport);
+        for(Chunk chunk : chunks){
             chunk.load();
         }
 
@@ -65,7 +65,7 @@ public class WorldMapViewer extends ZoomablePane {
         int yOffset = (int)getTransform().getTranslateY();
 
         g2.setColor(Color.white);
-        for(MapChunk tile : chunks){
+        for(Chunk tile : chunks){
             if(tile == null){
                 continue;
             }
@@ -73,15 +73,15 @@ public class WorldMapViewer extends ZoomablePane {
                 continue;
             }
             Rectangle bounds = tile.getRectangle();
-            int x = (tile.getX() * MapChunkGrid.TILE_SIZE) + xOffset;
-            int y = (tile.getY() * MapChunkGrid.TILE_SIZE) + yOffset;
-            g2.drawImage(tile.getImage(),x , y, MapChunkGrid.TILE_SIZE , MapChunkGrid.TILE_SIZE , null);
+            int x = (tile.getX() * ChunkGrid.TILE_SIZE) + xOffset;
+            int y = (tile.getY() * ChunkGrid.TILE_SIZE) + yOffset;
+            g2.drawImage(tile.getImage(),x , y, ChunkGrid.TILE_SIZE , ChunkGrid.TILE_SIZE , null);
 
             if(drawChunks){
                 g2.drawRect(bounds.x+xOffset, bounds.y+yOffset, (int)bounds.getWidth(), (int)bounds.getHeight());
             }
             if(drawCoords){
-                g2.drawString(tile.getX()+", "+tile.getY(), x + (MapChunkGrid.TILE_SIZE / 2), y + (MapChunkGrid.TILE_SIZE / 2));
+                g2.drawString(tile.getX()+", "+tile.getY(), x + (ChunkGrid.TILE_SIZE / 2), y + (ChunkGrid.TILE_SIZE / 2));
             }
         }
 
@@ -116,7 +116,7 @@ public class WorldMapViewer extends ZoomablePane {
         update();
     }
 
-    public MapChunkGrid getChunkGrid() {
+    public ChunkGrid getChunkGrid() {
         return chunkGrid;
     }
 

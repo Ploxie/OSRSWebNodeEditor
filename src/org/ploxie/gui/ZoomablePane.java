@@ -10,6 +10,7 @@ public class ZoomablePane extends JPanel implements MouseWheelListener, MouseLis
     protected double zoomFactor = 1;
     private double prevZoomFactor = 1;
     protected double xOffset = 0;
+
     protected double yOffset = 0;
     private int xDiff;
     private int yDiff;
@@ -44,6 +45,14 @@ public class ZoomablePane extends JPanel implements MouseWheelListener, MouseLis
 
     public Point getCursorPos() {
         return cursorPos;
+    }
+
+    public double getxOffset() {
+        return xOffset;
+    }
+
+    public double getyOffset() {
+        return yOffset;
     }
 
     public AffineTransform getTransform() {

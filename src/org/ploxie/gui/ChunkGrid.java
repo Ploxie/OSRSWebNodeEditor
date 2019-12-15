@@ -4,7 +4,7 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MapChunkGrid {
+public class ChunkGrid {
 
     public static int MAP_WIDTH = 12544;
     public static int MAP_HEIGHT = 37120;
@@ -12,10 +12,10 @@ public class MapChunkGrid {
     public static int OFFSET_X = 1152;
     public static int OFFSET_Y = -26625;
 
-    private MapChunk[][] tiles;
+    private Chunk[][] tiles;
     public WorldMapViewer viewer;
 
-    public MapChunkGrid(WorldMapViewer viewer){
+    public ChunkGrid(WorldMapViewer viewer){
         this.viewer = viewer;
     }
 
@@ -23,16 +23,16 @@ public class MapChunkGrid {
         int w = getWidth(zoom);
         int h = getHeight(zoom);
 
-        tiles = new MapChunk[w][h];
+        tiles = new Chunk[w][h];
 
         for(int y = 0; y < h;y++){
             for(int x = 0; x < w; x++){
-                getTiles()[x][y] = new MapChunk(this, plane, zoom, x,  y);
+                getTiles()[x][y] = new Chunk(this, plane, zoom, x,  y);
             }
         }
     }
 
-    public List<MapChunk> getChunksInViewport(Rectangle viewport, int zoom){
+    public List<Chunk> getChunksInViewport(Rectangle viewport){
 
         int minX = Math.max(0, viewport.x  / TILE_SIZE);
         int maxX = Math.min((int)((viewport.x+viewport.getWidth()) / TILE_SIZE)+1,tiles.length);
@@ -40,7 +40,7 @@ public class MapChunkGrid {
         int minY = Math.max(0, viewport.y / TILE_SIZE);
         int maxY = Math.min((int)((viewport.y+viewport.getHeight()) / TILE_SIZE)+1, tiles[0].length);
 
-        List<MapChunk> list = new ArrayList<>();
+        List<Chunk> list = new ArrayList<>();
 
         for(int y = minY; y < maxY;y++){
             for(int x = minX; x < maxX;x++){
@@ -63,7 +63,7 @@ public class MapChunkGrid {
         return (int)(MAP_WIDTH / (TILE_SIZE * getUnitsPerPixel(zoom))) + 1;
     }
 
-    public MapChunk[][] getTiles() {
+    public Chunk[][] getTiles() {
         return tiles;
     }
 }

@@ -6,24 +6,24 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 
-public class MapChunk {
+public class Chunk {
 
     private BufferedImage image;
     private Rectangle rectangle;
-    private MapChunkGrid grid;
+    private ChunkGrid grid;
     private int plane;
     private int zoom;
     private int x;
     private int y;
 
-    public MapChunk(MapChunkGrid grid, int plane, int zoom, int x, int y){
+    public Chunk(ChunkGrid grid, int plane, int zoom, int x, int y){
         this.grid = grid;
         this.plane = plane;
         this.zoom = zoom;
         this.x = x;
         this.y = y;
 
-        this.rectangle = new Rectangle(x * MapChunkGrid.TILE_SIZE, (y* MapChunkGrid.TILE_SIZE), MapChunkGrid.TILE_SIZE, MapChunkGrid.TILE_SIZE);
+        this.rectangle = new Rectangle(x * ChunkGrid.TILE_SIZE, (y* ChunkGrid.TILE_SIZE), ChunkGrid.TILE_SIZE, ChunkGrid.TILE_SIZE);
     }
 
     public void load(){
@@ -39,24 +39,6 @@ public class MapChunk {
 
             grid.viewer.repaint();
         }).start();
-    }
-
-    public boolean isInside(Rectangle viewport){
-
-        if(viewport.contains(rectangle.getMinX(), rectangle.getMinY())){
-            return true;
-        }
-        if(viewport.contains(rectangle.getMaxX(), rectangle.getMinY())){
-            return true;
-        }
-        if(viewport.contains(rectangle.getMaxX(), rectangle.getMaxY())){
-            return true;
-        }
-        if(viewport.contains(rectangle.getMinX(), rectangle.getMaxY())){
-            return true;
-        }
-        return false;
-        //return (!viewport.contains(rectangle.getMinX(), rectangle.getMinY()) && !viewport.contains(rectangle.getMaxX(), rectangle.getMinY()) && !viewport.contains(rectangle.getMaxX(), rectangle.getMaxY()) && !viewport.contains(rectangle.getMinX(), rectangle.getMaxY())) == false;
     }
 
     public Rectangle getRectangle(){
