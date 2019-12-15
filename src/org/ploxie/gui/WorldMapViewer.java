@@ -34,7 +34,7 @@ public class WorldMapViewer extends ZoomablePane {
         this.chunkGrid = new MapChunkGrid(this);
         this.chunkGrid.loadTiles(zoom, plane);
 
-        this.chunks = new ArrayList<>(chunkGrid.getWidth(MAX_ZOOM) * chunkGrid.getHeight(MAX_ZOOM));//Collections.synchronizedList(new ArrayList<>());
+        this.chunks = new ArrayList<>();
     }
 
     @Override
@@ -49,7 +49,7 @@ public class WorldMapViewer extends ZoomablePane {
         for(MapChunk chunk : chunks){
             chunk.load();
         }
-        
+
         repaint();
     }
 
