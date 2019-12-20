@@ -9,9 +9,8 @@ public class ZoomablePane extends JPanel implements MouseWheelListener, MouseLis
 
     protected double zoomFactor = 1;
     private double prevZoomFactor = 1;
-    protected double xOffset = 0;
-
-    protected double yOffset = 0;
+    protected double xOffset;
+    protected double yOffset;
     private int xDiff;
     private int yDiff;
     private Point startPoint;
@@ -36,10 +35,6 @@ public class ZoomablePane extends JPanel implements MouseWheelListener, MouseLis
         addMouseMotionListener(this);
         addMouseListener(this);
         addKeyListener(this);
-
-    }
-
-    protected void update(){
 
     }
 
@@ -82,7 +77,7 @@ public class ZoomablePane extends JPanel implements MouseWheelListener, MouseLis
         transform.setToTranslation(xOffset, yOffset);
         transform.scale(zoomFactor, zoomFactor);
         prevZoomFactor = zoomFactor;
-        update();
+        repaint();
     }
 
     @Override
@@ -103,7 +98,7 @@ public class ZoomablePane extends JPanel implements MouseWheelListener, MouseLis
         }
 
         this.cursorPos = new Point((int) ((-xOffset + e.getX()) / zoomFactor), (int) ((-yOffset + e.getY()) / zoomFactor));
-        update();
+        repaint();
     }
 
     @Override
@@ -111,7 +106,7 @@ public class ZoomablePane extends JPanel implements MouseWheelListener, MouseLis
         if(e != null){
             this.cursorPos = new Point((int) ((-xOffset + e.getX()) / zoomFactor), (int) ((-yOffset + e.getY()) / zoomFactor));
         }
-        update();
+        repaint();
     }
 
     @Override

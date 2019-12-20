@@ -1,10 +1,8 @@
-package org.ploxie.pathfinder;
+package org.ploxie.pathfinder2;
 
-import org.ploxie.pathfinder.util.Position;
-import org.ploxie.pathfinder.web.Web;
-import org.ploxie.pathfinder.web.WebNode;
-import org.ploxie.pathfinder.web.WebNodeConnection;
-import sun.rmi.runtime.Log;
+import org.ploxie.pathfinder2.web.Web;
+import org.ploxie.pathfinder2.web.WebNode;
+import org.ploxie.pathfinder2.web.WebNodeConnection;
 
 import java.util.*;
 

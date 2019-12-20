@@ -1,4 +1,4 @@
-package org.ploxie.pathfinder.util;
+package org.ploxie.pathfinder.utils;
 
 public class Triplet<X, Y, Z> {
 
@@ -12,16 +12,20 @@ public class Triplet<X, Y, Z> {
         this.third = third;
     }
 
-    public X getFirst() {
+    protected X getFirst() {
         return this.first;
     }
 
-    public Y getSecond() {
+    protected Y getSecond() {
         return this.second;
     }
 
-    public Z getThird() {
+    protected Z getThird() {
         return this.third;
     }
 
+    @Override
+    public String toString() {
+        return "("+getFirst()+", "+getSecond()+", "+getThird()+")";
+    }
 }

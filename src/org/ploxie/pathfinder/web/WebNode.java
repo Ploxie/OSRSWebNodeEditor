@@ -1,109 +1,58 @@
 package org.ploxie.pathfinder.web;
 
-import org.ploxie.pathfinder.collision.Region;
-import org.ploxie.pathfinder.util.Position;
 
-import java.util.LinkedList;
+import org.ploxie.pathfinder.utils.Position;
+
+import java.util.HashSet;
+import java.util.Set;
+
 
 public class WebNode extends Position {
 
-    private final LinkedList<WebNodeConnection> connections;
+    protected Set<WebNodeConnection> connections;
 
-    private WebNode parent;
+    protected WebNode(int x, int y, int z) {
+        super(x, y, z);
 
-    private double gCost;
-    private double heuristic;
-
-    private Position regionPosition;
-
-    public WebNode(int x, int y, int plane) {
-        super(x, y, plane);
-        this.regionPosition = Region.worldToRegionPosition(this);
-
-        this.connections = new LinkedList<>();
+        this.connections = new HashSet<>();
     }
 
-    public WebNode(Position position) {
-        super(position.getX(), position.getY(), position.getZ());
-        this.regionPosition = Region.worldToRegionPosition(this);
-
-        this.connections = new LinkedList<>();
+    public boolean addWalkConnection(WebNode target){
+        return addConnection(new WebNodeConnection(ConnectionType.WALK, this, target));
     }
 
-    protected boolean addConnection(WebNode node) {
-        WebNodeConnection connection = new WebNodeConnection(this, node);
-        if (connections.contains(connection)) {
-            return false;
-        }
-        return addConnection(connection);
-    }
-
-    protected boolean addConnection(WebNodeConnection connection) {
+    public boolean addConnection(WebNodeConnection connection){
         return !connections.contains(connection) && connections.add(connection);
     }
 
-    protected boolean removeConnection(WebNodeConnection connection) {
+    public boolean removeConnection(WebNodeConnection connection){
         return connections.contains(connection) && connections.remove(connection);
     }
 
-    public boolean isConnectedTo(WebNode target) {
-        return getConnection(target) != null;
+    public boolean isConnectedTo(WebNode target){
+        return isConnectedTo(target,null);
     }
 
-    public WebNodeConnection getConnection(WebNode node) {
-        for (WebNodeConnection e : connections) {
-            if (e.getTarget().equals(node)) {
-                return e;
+    public boolean isConnectedTo(WebNode target, ConnectionType type){
+        for(WebNodeConnection connection : connections){
+            if(connection.getTarget().equals(target)){
+                if(type != null){
+                    if(!connection.getType().equals(type)){
+                        continue;
+                    }
+                }
+                return true;
             }
         }
-        return null;
+        return false;
     }
 
-    public int distanceTo(WebNode target) {
-        int distX = Math.abs(getX() - target.getX());
-        int distY = Math.abs(getY() - target.getY());
-        return distX + distY;
-    }
+    public static void main(String[] args) {
+        WebNode a = new WebNode(0,0,0);
+        WebNode b = new WebNode(1,1,1);
 
-    public double calculateHeuristic(WebNode goal, double stepCost) {
-        heuristic = distanceTo(goal) * stepCost;
-        return heuristic;
-    }
+        a.connections.add(new WebNodeConnection(ConnectionType.WALK, a,b));
 
-    public double calculateHeuristic(WebNode goal) {
-        return calculateHeuristic(goal, 1);
+        System.out.println(a.isConnectedTo(b, ConnectionType.WALK));
     }
-
-    public void setGCost(double cost) {
-        this.gCost = cost;
-    }
-
-    public double getGCost() {
-        return gCost;
-    }
-
-    public double getTotalCost() {
-        return gCost + heuristic;
-    }
-
-    public LinkedList<WebNodeConnection> getConnections() {
-        return connections;
-    }
-
-    public Position getRegionPosition() {
-        return this.regionPosition;
-    }
-
-    public int getPlane() {
-        return getZ();
-    }
-
-    public void setParent(WebNode parent) {
-        this.parent = parent;
-    }
-
-    public WebNode getParent() {
-        return parent;
-    }
-
 }

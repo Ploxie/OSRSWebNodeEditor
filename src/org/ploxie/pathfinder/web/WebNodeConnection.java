@@ -1,79 +1,57 @@
 package org.ploxie.pathfinder.web;
 
-public  class WebNodeConnection implements Comparable<WebNodeConnection> {
 
-    private final WebNode source;
-    private final WebNode target;
 
-    private double heuristic;
+public class WebNodeConnection {
 
-    public WebNodeConnection(WebNode source, WebNode target) {
+    private int cached_hash = -1;
+
+    protected final ConnectionType type;
+    protected WebNode source;
+    protected WebNode target;
+
+    public WebNodeConnection(ConnectionType type, WebNode source, WebNode target){
+        this.type = type;
         this.source = source;
         this.target = target;
-
-        this.heuristic = calculateHeuristic();
     }
 
-    public WebNode getSource() {
+    public boolean canUse(){
+        return true;
+    }
+
+    public double getCost(){
+        return 0.0;
+    }
+
+    public WebNode getSource(){
         return source;
     }
 
-    public WebNode getTarget() {
+    public WebNode getTarget(){
         return target;
     }
 
-    public double getHeuristic() {
-        return heuristic;
+    public ConnectionType getType(){
+        return type;
     }
 
-    public double calculateHeuristic() {
-        return target.distanceTo(source);
-    }
-
-    @Override
-    public final int compareTo(final WebNodeConnection o) {
-        double dist = getHeuristic() - o.getHeuristic();
-        if (dist == 0) {
-            return 0;
+    public boolean equals(Object obj) {
+        if(obj == null){
+            return false;
         }
-        if (dist < 0) {
-            return -1;
+        if(!(obj instanceof WebNodeConnection)){
+            return false;
         }
-        return 1;
+        return hashCode() == obj.hashCode();
     }
 
     @Override
     public int hashCode() {
-        WebNode source = getSource();
-        int value = 0;
-        if (source != null) {
-            value += source.hashCode();
+        if(cached_hash == -1) {
+            cached_hash = getTarget().hashCode() + getType().hash();
         }
-        source = getTarget();
-        if (source != null) {
-            value += source.hashCode();
-        }
-        value += getHeuristic();
-        return value;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (o == null || !(o instanceof WebNodeConnection)) {
-            return false;
-        }
-        WebNodeConnection wnc = (WebNodeConnection) o;
-        if (getSource() == null && wnc.getSource() != null) {
-            return false;
-        } else if (!getSource().equals(wnc.getSource())) {
-            return false;
-        }
-        if (getTarget() == null && wnc.getTarget() != null) {
-            return false;
-        } else if (!getTarget().equals(wnc.getTarget())) {
-            return false;
-        }
-        return true;
+        return cached_hash;
     }
 
     @Override

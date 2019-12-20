@@ -1,12 +1,11 @@
-package org.ploxie.pathfinder;
+package org.ploxie.pathfinder2;
 
-import org.ploxie.pathfinder.collision.Region;
-import org.ploxie.pathfinder.collision.RegionFileIO;
-import org.ploxie.pathfinder.util.Position;
-import org.ploxie.pathfinder.web.WebNode;
+import org.ploxie.pathfinder2.collision.Region;
+import org.ploxie.pathfinder2.collision.RegionFileIO;
+import org.ploxie.pathfinder2.util.Position;
+import org.ploxie.pathfinder2.web.WebNode;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 
 public class WebPathfinder extends AStarPathfinder{

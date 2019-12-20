@@ -1,15 +1,17 @@
 package org.ploxie.gui.overlays;
 
-import org.ploxie.gui.Chunk;
+import org.ploxie.gui.map.Chunk;
 import org.ploxie.gui.WorldMapViewer;
+import org.ploxie.gui.map.WorldMap;
 
 import java.awt.*;
+import java.awt.event.MouseEvent;
 
-public class DebugOverlay extends MapOverlay {
+public class DebugOverlay extends Overlay {
 
     private boolean drawHoveredTile = true;
-    private boolean drawHoveredChunk = true;
-    private boolean drawTileCoords = true;
+    private boolean drawHoveredChunk = false;
+    private boolean drawTileCoords = false;
 
     public DebugOverlay(WorldMapViewer mapViewer) {
         super(mapViewer);
@@ -19,7 +21,7 @@ public class DebugOverlay extends MapOverlay {
     public void draw(Graphics2D g) {
         if(drawHoveredTile) {
             g.setColor(Color.GREEN);
-            Rectangle hoveredTile = getHoveredTile();
+            Rectangle hoveredTile = mouseMapTile.getRectangle();
             if (hoveredTile != null) {
                 g.drawRect(hoveredTile.x + (int) mapViewer.getxOffset(), hoveredTile.y + (int) mapViewer.getyOffset(), (int) hoveredTile.getWidth(), (int) hoveredTile.getHeight());
             }
@@ -36,9 +38,12 @@ public class DebugOverlay extends MapOverlay {
 
         if(drawTileCoords) {
             g.setColor(Color.GREEN);
-            Point mapTileCoord = getMapTileCoordinates(mousePosition.x, mousePosition.y);
-            Point tileCoord = getWorldCoordinates(mapTileCoord.x, mapTileCoord.y);
-            g.drawString("Tile: ("+tileCoord.x+", "+tileCoord.y+")", 10, 40);
+            g.drawString("Tile: ("+mouseWorldTile.getX()+", "+mouseWorldTile.getY()+")", 10, 40);
         }
+    }
+
+    @Override
+    public void mouseMoved(MouseEvent e) {
+        super.mouseMoved(e);
     }
 }

@@ -1,4 +1,4 @@
-package org.ploxie.pathfinder.web;
+package org.ploxie.pathfinder2.web;
 
 import java.io.*;
 import java.util.ArrayList;

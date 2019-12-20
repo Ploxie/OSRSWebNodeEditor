@@ -1,6 +1,6 @@
-package org.ploxie.pathfinder.collision;
+package org.ploxie.pathfinder2.collision;
 
-import org.ploxie.pathfinder.util.Position;
+import org.ploxie.pathfinder2.util.Position;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -8,7 +8,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
-import java.util.Arrays;
 
 public class RegionFileIO {
 

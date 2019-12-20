@@ -1,13 +1,8 @@
 package org.ploxie.gui;
 
-import org.ploxie.pathfinder.web.WebLoader;
-
 import javax.swing.*;
-import javax.swing.filechooser.FileNameExtensionFilter;
-import java.awt.*;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.io.File;
+
+import org.pushingpixels.substance.api.skin.*;
 
 public class GUI extends JFrame {
 
@@ -25,6 +20,10 @@ public class GUI extends JFrame {
         } catch (UnsupportedLookAndFeelException e) {
             e.printStackTrace();
         }
+
+        setUndecorated(true);
+        getRootPane().setWindowDecorationStyle(JRootPane.FRAME);
+        setResizable(false);
 
         setSize(800, 800);
         setTitle("Web Editor");
@@ -59,6 +58,16 @@ public class GUI extends JFrame {
 
         WorldMapViewer viewer = new WorldMapViewer(0,0);
         add(viewer);
+
+
+        SwingUtilities.invokeLater(() -> {
+            try {
+                UIManager.setLookAndFeel(new SubstanceGraphiteLookAndFeel());
+                SwingUtilities.updateComponentTreeUI(this);
+            } catch (Exception e) {
+
+            }
+        });
 
     }
 

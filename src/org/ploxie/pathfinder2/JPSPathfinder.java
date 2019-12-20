@@ -1,16 +1,13 @@
-package org.ploxie.pathfinder;
+package org.ploxie.pathfinder2;
 
-import org.ploxie.pathfinder.collision.CollisionData;
-import org.ploxie.pathfinder.collision.CollisionFlags;
-import org.ploxie.pathfinder.collision.Region;
-import org.ploxie.pathfinder.util.Position;
-import org.ploxie.pathfinder.web.Web;
-import org.ploxie.pathfinder.web.WebNode;
+import org.ploxie.pathfinder2.collision.CollisionData;
+import org.ploxie.pathfinder2.collision.Region;
+import org.ploxie.pathfinder2.util.Position;
+import org.ploxie.pathfinder2.web.Web;
+import org.ploxie.pathfinder2.web.WebNode;
 
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
-import java.util.PriorityQueue;
 
 public class JPSPathfinder extends AStarPathfinder {
 

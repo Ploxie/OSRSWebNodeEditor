@@ -1,4 +1,4 @@
-package org.ploxie.pathfinder.collision;
+package org.ploxie.pathfinder2.collision;
 
 public class CollisionFlags {
 

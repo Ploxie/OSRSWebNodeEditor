@@ -1,8 +1,11 @@
 package org.ploxie.gui;
 
+import org.ploxie.gui.controls.Controls;
+import org.ploxie.gui.map.Chunk;
+import org.ploxie.gui.map.WorldMap;
 import org.ploxie.gui.overlays.DebugOverlay;
-import org.ploxie.gui.overlays.MapOverlay;
-import org.ploxie.gui.overlays.NodeOverlay;
+import org.ploxie.gui.overlays.Overlay;
+import org.ploxie.gui.overlays.WebOverlay;
 
 import java.awt.*;
 import java.awt.event.MouseWheelEvent;
@@ -11,46 +14,34 @@ import java.util.List;
 
 public class WorldMapViewer extends ZoomablePane {
 
-    private ChunkGrid chunkGrid;
-    private MapOverlay debugOverlay;
-    private NodeOverlay nodeOverlay;
+    private WorldMap worldMap;
+    private Overlay debugOverlay;
+    private WebOverlay nodeOverlay;
 
     private static final int MIN_ZOOM = 3;
     private static final int MAX_ZOOM = 11;
     private int zoom = MIN_ZOOM;
+
+    private static final int MIN_PLANE = 0;
+    private static final int MAX_PLANE = 3;
     private int plane = 0;
 
-    private boolean drawChunks = true;
-    private boolean drawCoords = true;
-
-    private List<Chunk> chunks;
+    private boolean drawChunks = false;
+    private boolean drawCoords = false;
 
     public WorldMapViewer(double xOffset, double yOffset) {
         super(xOffset, yOffset);
+        this.worldMap = new WorldMap();
 
         this.debugOverlay = new DebugOverlay(this);
-        this.nodeOverlay = new NodeOverlay(this);
+        this.nodeOverlay = new WebOverlay(this, null);
 
-        this.chunkGrid = new ChunkGrid(this);
-        this.chunkGrid.loadTiles(zoom, plane);
+        this.worldMap.loadTiles(zoom, plane);
 
-        this.chunks = new ArrayList<>();
-    }
+        setLayout(new GridLayout(0,1));
+        Controls controls = new Controls(worldMap, debugOverlay);
+        add(controls);
 
-    @Override
-    protected void update(){
-        this.chunks.clear();
-
-        int xOffset = (int)getTransform().getTranslateX();
-        int yOffset = (int)getTransform().getTranslateY();
-        Rectangle viewport = new Rectangle(-xOffset, -yOffset, getWidth(),getHeight());
-
-        chunks = chunkGrid.getChunksInViewport(viewport);
-        for(Chunk chunk : chunks){
-            chunk.load();
-        }
-
-        repaint();
     }
 
     @Override
@@ -63,64 +54,77 @@ public class WorldMapViewer extends ZoomablePane {
 
         int xOffset = (int)getTransform().getTranslateX();
         int yOffset = (int)getTransform().getTranslateY();
+        Rectangle viewport = new Rectangle(-xOffset, -yOffset, getWidth(),getHeight());
 
         g2.setColor(Color.white);
-        for(Chunk tile : chunks){
-            if(tile == null){
+        for(Chunk chunk : worldMap.getChunksInViewport(viewport)){
+            if(chunk == null){
                 continue;
             }
-            if(tile.getImage() == null){
+            chunk.load(this);
+            if(chunk.getImage() == null){
                 continue;
             }
-            Rectangle bounds = tile.getRectangle();
-            int x = (tile.getX() * ChunkGrid.TILE_SIZE) + xOffset;
-            int y = (tile.getY() * ChunkGrid.TILE_SIZE) + yOffset;
-            g2.drawImage(tile.getImage(),x , y, ChunkGrid.TILE_SIZE , ChunkGrid.TILE_SIZE , null);
+            Rectangle bounds = chunk.getRectangle();
+            int x = (chunk.getX() * WorldMap.TILE_SIZE) + xOffset;
+            int y = (chunk.getY() * WorldMap.TILE_SIZE) + yOffset;
+            g2.drawImage(chunk.getImage(),x , y, WorldMap.TILE_SIZE , WorldMap.TILE_SIZE , null);
 
             if(drawChunks){
                 g2.drawRect(bounds.x+xOffset, bounds.y+yOffset, (int)bounds.getWidth(), (int)bounds.getHeight());
             }
             if(drawCoords){
-                g2.drawString(tile.getX()+", "+tile.getY(), x + (ChunkGrid.TILE_SIZE / 2), y + (ChunkGrid.TILE_SIZE / 2));
+                g2.drawString(chunk.getX()+", "+chunk.getY(), x + (WorldMap.TILE_SIZE / 2), y + (WorldMap.TILE_SIZE / 2));
             }
         }
 
         nodeOverlay.draw(g2);
         debugOverlay.draw(g2);
-
-        g2.setColor(Color.white);
-        g2.drawString(""+xOffset+", "+yOffset, 10, 15);
-        g2.drawString("Tiles: "+chunks.size(), 10, 30);
     }
 
     @Override
     public void mouseWheelMoved(MouseWheelEvent e) {
-
-        double lastWidth = chunkGrid.getWidth(zoom);
-        double lastHeight = chunkGrid.getHeight(zoom);
+        double lastWidth = worldMap.getWidth();
+        double lastHeight = worldMap.getHeight();
 
         double xRel = (MouseInfo.getPointerInfo().getLocation().getX()) - (getLocationOnScreen().getX());
         double yRel = (MouseInfo.getPointerInfo().getLocation().getY()) - (getLocationOnScreen().getY());
 
         zoom -= e.getWheelRotation();
         zoom = Math.max(Math.min(zoom, MAX_ZOOM), MIN_ZOOM);
-        this.chunkGrid.loadTiles(zoom, plane);
+        this.worldMap.loadTiles(zoom, plane);
 
-        double zoomDivX = (chunkGrid.getWidth(zoom) / lastWidth);
-        double zoomDivY = (chunkGrid.getHeight(zoom) / lastHeight);
+        double zoomDivX = (worldMap.getWidth() / lastWidth);
+        double zoomDivY = (worldMap.getHeight() / lastHeight);
 
         xOffset = (zoomDivX) * (xOffset) + (1 - zoomDivX) * (xRel);
         yOffset = (zoomDivY) * (yOffset) + (1 - zoomDivY) * (yRel);
 
         transform.setToTranslation(xOffset, yOffset);
-        update();
+        repaint();
     }
 
-    public ChunkGrid getChunkGrid() {
-        return chunkGrid;
+    public WorldMap getWorldMap() {
+        return worldMap;
     }
 
     public int getZoom() {
         return zoom;
+    }
+
+    public int getPlane() {
+        return plane;
+    }
+
+    public void setPlane(int plane) {
+        if(plane < MIN_PLANE){
+            return;
+        }
+        if(plane > MAX_PLANE){
+            return;
+        }
+        this.plane = plane;
+        this.worldMap.loadTiles(zoom, plane);
+        repaint();
     }
 }

@@ -1,4 +1,4 @@
-package org.ploxie.pathfinder.util;
+package org.ploxie.pathfinder2.util;
 
 public class Position extends Triplet<Integer, Integer, Integer> {
 

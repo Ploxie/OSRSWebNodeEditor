@@ -1,6 +1,6 @@
-package org.ploxie.pathfinder.collision;
+package org.ploxie.pathfinder2.collision;
 
-import org.ploxie.pathfinder.util.Position;
+import org.ploxie.pathfinder2.util.Position;
 
 import java.util.HashMap;
 

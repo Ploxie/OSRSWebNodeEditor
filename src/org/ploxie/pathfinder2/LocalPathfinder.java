@@ -1,10 +1,9 @@
-package org.ploxie.pathfinder;
+package org.ploxie.pathfinder2;
 
-import org.ploxie.pathfinder.collision.CollisionData;
-import org.ploxie.pathfinder.collision.Region;
-import org.ploxie.pathfinder.util.Position;
-import org.ploxie.pathfinder.web.Web;
-import org.ploxie.pathfinder.web.WebNode;
+import org.ploxie.pathfinder2.collision.CollisionData;
+import org.ploxie.pathfinder2.collision.Region;
+import org.ploxie.pathfinder2.util.Position;
+import org.ploxie.pathfinder2.web.WebNode;
 
 import java.util.*;
 

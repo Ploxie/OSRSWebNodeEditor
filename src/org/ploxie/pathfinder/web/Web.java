@@ -1,76 +1,44 @@
 package org.ploxie.pathfinder.web;
 
-import org.ploxie.pathfinder.util.Position;
+import org.ploxie.pathfinder.utils.Position;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
-public class Web extends HashSet<WebNode>{
+public class Web {
 
-    @Override
-    public boolean add(WebNode e) {
-        return addWebNode(e);
+    protected Map<Position, WebNode> nodes;
+
+    public Web(){
+        this.nodes = new HashMap<>();
     }
 
-    public boolean addWebNode(WebNode node) {
-        if(contains(node)) {
+    public boolean addWebNode(WebNode node){
+        if(nodes.containsKey(node)){
+            System.err.println("Web already contains node: "+node);
             return false;
         }
-
-        return super.add(node);
+        return nodes.put(node, node) == null;
     }
 
-    public boolean addConnection(WebNode a, WebNode b) {
-        if(!contains(a)) {
-            add(a);
-        }
-        if(!contains(b)) {
-            add(b);
-        }
-        return a.addConnection(b) && b.addConnection(a);
+    public boolean removeWebNode(WebNode node){
+        return nodes.containsKey(node) && nodes.remove(node) != null;
     }
 
-    public WebNode getNode(int x, int y, int plane) {
-
-        WebNode nnode = new WebNode(x,y,plane);
-        for(WebNode node : this) {
-            if(node.equals(nnode)) {
-                return node;
-            }
-        }
-        return nnode;
-    }
-
-    public WebNode getNode(Position position){
-        return getNode(position.getX(), position.getY(), position.getZ());
-    }
-
-    public boolean removeWebNode(WebNode node) {
-        List<WebNodeConnection> connectionsToRemove = new ArrayList<WebNodeConnection>();
-        for(WebNodeConnection connection : node.getConnections()) {
-            connectionsToRemove.add(connection);
-        }
-        for(WebNodeConnection connection : connectionsToRemove) {
-            node.removeConnection(connection);
-        }
-        return removeConnectionsTo(node) && remove(node);
-    }
-
-    private boolean removeConnectionsTo(WebNode target) {
-        for(WebNode node : this) {
-            List<WebNodeConnection> connectionsToRemove = new ArrayList<WebNodeConnection>();
-            for(WebNodeConnection connection : node.getConnections()) {
-                if(connection.getTarget().equals(target)){
-                    connectionsToRemove.add(connection);
-                }
-            }
-            for(WebNodeConnection connection : connectionsToRemove) {
-                node.removeConnection(connection);
-            }
+    public WebNode createNode(int x, int y, int z){
+        WebNode newNode = new WebNode(x,y,z);
+        if(nodes.containsKey(newNode)){
+            return nodes.get(newNode);
         }
 
-        return true;
+        nodes.put(newNode, newNode);
+        return newNode;
     }
+
+    public Collection<WebNode> getNodes(){
+        return nodes.values();
+    }
+
 
 }
