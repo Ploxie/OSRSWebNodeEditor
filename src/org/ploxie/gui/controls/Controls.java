@@ -21,11 +21,11 @@ public class Controls extends JPanel {
         setLayout(null);
         setOpaque(false);
         setBackground(new Color(0,0,0,0));
-        
+
         this.tileX = new JButton(){
             @Override
             public String getText() {
-                return ""+mapViewer.getMapPointOnMouse().getX();
+                return ""+mapViewer.getWorldTileOnMouse().getX();
             }
         };
         this.tileX.setLocation(10, 10);
@@ -35,7 +35,7 @@ public class Controls extends JPanel {
         this.tileY = new JButton(){
             @Override
             public String getText() {
-                return ""+mapViewer.getMapPointOnMouse().getY();
+                return ""+mapViewer.getWorldTileOnMouse().getY();
             }
         };
         this.tileY.setLocation(69, 10);
