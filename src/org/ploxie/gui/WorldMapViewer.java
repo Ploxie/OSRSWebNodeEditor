@@ -8,6 +8,7 @@ import org.ploxie.gui.overlays.Overlay;
 import org.ploxie.gui.overlays.WebOverlay;
 
 import java.awt.*;
+import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,12 +27,16 @@ public class WorldMapViewer extends ZoomablePane {
     private static final int MAX_PLANE = 3;
     private int plane = 0;
 
-    private boolean drawChunks = false;
-    private boolean drawCoords = false;
+    protected WorldMap.MapPoint mapPointOnMouse;
+    protected WorldMap.MapTile mapTileOnMouse;
+    protected WorldMap.WorldTile worldTileOnMouse;
 
     public WorldMapViewer(double xOffset, double yOffset) {
         super(xOffset, yOffset);
         this.worldMap = new WorldMap();
+        this.mapPointOnMouse = new WorldMap.MapPoint(getWorldMap(), 0,0);
+        this.mapTileOnMouse = this.mapPointOnMouse.toMapTile();
+        this.worldTileOnMouse = this.mapTileOnMouse.toWorldTile();
 
         this.debugOverlay = new DebugOverlay(this);
         this.nodeOverlay = new WebOverlay(this, null);
@@ -39,7 +44,7 @@ public class WorldMapViewer extends ZoomablePane {
         this.worldMap.loadTiles(zoom, plane);
 
         setLayout(new GridLayout(0,1));
-        Controls controls = new Controls(worldMap, debugOverlay);
+        Controls controls = new Controls(this);
         add(controls);
 
     }
@@ -54,32 +59,42 @@ public class WorldMapViewer extends ZoomablePane {
 
         int xOffset = (int)getTransform().getTranslateX();
         int yOffset = (int)getTransform().getTranslateY();
-        Rectangle viewport = new Rectangle(-xOffset, -yOffset, getWidth(),getHeight());
+        Rectangle viewport = getViewport();
 
         g2.setColor(Color.white);
         for(Chunk chunk : worldMap.getChunksInViewport(viewport)){
             if(chunk == null){
                 continue;
             }
+
             chunk.load(this);
+
             if(chunk.getImage() == null){
                 continue;
             }
-            Rectangle bounds = chunk.getRectangle();
             int x = (chunk.getX() * WorldMap.TILE_SIZE) + xOffset;
             int y = (chunk.getY() * WorldMap.TILE_SIZE) + yOffset;
             g2.drawImage(chunk.getImage(),x , y, WorldMap.TILE_SIZE , WorldMap.TILE_SIZE , null);
-
-            if(drawChunks){
-                g2.drawRect(bounds.x+xOffset, bounds.y+yOffset, (int)bounds.getWidth(), (int)bounds.getHeight());
-            }
-            if(drawCoords){
-                g2.drawString(chunk.getX()+", "+chunk.getY(), x + (WorldMap.TILE_SIZE / 2), y + (WorldMap.TILE_SIZE / 2));
-            }
         }
 
         nodeOverlay.draw(g2);
         debugOverlay.draw(g2);
+    }
+
+    public Rectangle getViewport() {
+        return new Rectangle((int)-getTransform().getTranslateX(), (int)-getTransform().getTranslateY(), getWidth(),getHeight());
+    }
+
+    public WorldMap.MapPoint getMapPointOnMouse() {
+        return mapPointOnMouse;
+    }
+
+    public WorldMap.MapTile getMapTileOnMouse() {
+        return mapTileOnMouse;
+    }
+
+    public WorldMap.WorldTile getWorldTileOnMouse() {
+        return worldTileOnMouse;
     }
 
     @Override
@@ -102,6 +117,18 @@ public class WorldMapViewer extends ZoomablePane {
 
         transform.setToTranslation(xOffset, yOffset);
         repaint();
+    }
+
+    @Override
+    public void mouseMoved(MouseEvent e) {
+        super.mouseMoved(e);
+
+        int x = (int)(-xOffset+e.getX());
+        int y = (int)(-yOffset+e.getY());
+
+        this.mapPointOnMouse = new WorldMap.MapPoint(getWorldMap(), x,y);
+        this.mapTileOnMouse = this.mapPointOnMouse.toMapTile();
+        this.worldTileOnMouse = this.mapTileOnMouse.toWorldTile();
     }
 
     public WorldMap getWorldMap() {

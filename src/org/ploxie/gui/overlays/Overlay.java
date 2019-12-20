@@ -13,16 +13,9 @@ public abstract class Overlay implements MouseMotionListener, MouseListener {
 
     protected WorldMapViewer mapViewer;
 
-    protected WorldMap.MapPoint mapPointOnMouse;
-    protected WorldMap.MapTile mapTileOnMouse;
-    protected WorldMap.WorldTile worldTileOnMouse;
-
     public Overlay(WorldMapViewer mapViewer){
         this.mapViewer = mapViewer;
 
-        this.mapPointOnMouse = new WorldMap.MapPoint(mapViewer.getWorldMap(), 0,0);
-        this.mapTileOnMouse = this.mapPointOnMouse.toMapTile();
-        this.worldTileOnMouse = this.mapTileOnMouse.toWorldTile();
 
         mapViewer.addMouseMotionListener(this);
         mapViewer.addMouseListener(this);
@@ -31,8 +24,8 @@ public abstract class Overlay implements MouseMotionListener, MouseListener {
     public abstract void draw(Graphics2D g);
 
     protected Chunk getHoveredChunk(){
-        int x = mapPointOnMouse.getX() / WorldMap.TILE_SIZE;
-        int y = mapPointOnMouse.getY() / WorldMap.TILE_SIZE;
+        int x = mapViewer.getMapPointOnMouse().getX() / WorldMap.TILE_SIZE;
+        int y = mapViewer.getMapPointOnMouse().getY() / WorldMap.TILE_SIZE;
 
         if(mapViewer.getWorldMap().getTiles().length <= x){
             return null;
@@ -44,17 +37,7 @@ public abstract class Overlay implements MouseMotionListener, MouseListener {
         return mapViewer.getWorldMap().getTiles()[x][y];
     }
 
-    public WorldMap.MapPoint getMapPointOnMouse() {
-        return mapPointOnMouse;
-    }
 
-    public WorldMap.MapTile getMapTileOnMouse() {
-        return mapTileOnMouse;
-    }
-
-    public WorldMap.WorldTile getWorldTileOnMouse() {
-        return worldTileOnMouse;
-    }
 
     @Override
     public void mouseDragged(MouseEvent e) {
@@ -63,11 +46,7 @@ public abstract class Overlay implements MouseMotionListener, MouseListener {
 
     @Override
     public void mouseMoved(MouseEvent e) {
-        int x = (int)(-mapViewer.getxOffset()+e.getX());
-        int y = (int)(-mapViewer.getyOffset()+e.getY());
-        this.mapPointOnMouse = new WorldMap.MapPoint(mapViewer.getWorldMap(), x,y);
-        this.mapTileOnMouse = this.mapPointOnMouse.toMapTile();
-        this.worldTileOnMouse = this.mapTileOnMouse.toWorldTile();
+
     }
 
     @Override
