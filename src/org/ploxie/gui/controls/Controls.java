@@ -25,7 +25,7 @@ public class Controls extends JPanel {
         this.tileX = new JButton(){
             @Override
             public String getText() {
-                return ""+overlay.mouseWorldTile.getX();
+                return ""+overlay.getWorldTileOnMouse().getX();
             }
         };
         this.tileX.setLocation(10, 10);
@@ -35,7 +35,7 @@ public class Controls extends JPanel {
         this.tileY = new JButton(){
             @Override
             public String getText() {
-                return ""+overlay.mouseWorldTile.getY();
+                return ""+overlay.getWorldTileOnMouse().getY();
             }
         };
         this.tileY.setLocation(69, 10);

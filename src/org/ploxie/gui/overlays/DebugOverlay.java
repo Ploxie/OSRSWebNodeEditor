@@ -2,7 +2,6 @@ package org.ploxie.gui.overlays;
 
 import org.ploxie.gui.map.Chunk;
 import org.ploxie.gui.WorldMapViewer;
-import org.ploxie.gui.map.WorldMap;
 
 import java.awt.*;
 import java.awt.event.MouseEvent;
@@ -21,7 +20,7 @@ public class DebugOverlay extends Overlay {
     public void draw(Graphics2D g) {
         if(drawHoveredTile) {
             g.setColor(Color.GREEN);
-            Rectangle hoveredTile = mouseMapTile.getRectangle();
+            Rectangle hoveredTile = mapTileOnMouse.getRectangle();
             if (hoveredTile != null) {
                 g.drawRect(hoveredTile.x + (int) mapViewer.getxOffset(), hoveredTile.y + (int) mapViewer.getyOffset(), (int) hoveredTile.getWidth(), (int) hoveredTile.getHeight());
             }
@@ -38,7 +37,7 @@ public class DebugOverlay extends Overlay {
 
         if(drawTileCoords) {
             g.setColor(Color.GREEN);
-            g.drawString("Tile: ("+mouseWorldTile.getX()+", "+mouseWorldTile.getY()+")", 10, 40);
+            g.drawString("Tile: ("+ worldTileOnMouse.getX()+", "+ worldTileOnMouse.getY()+")", 10, 40);
         }
     }
 
