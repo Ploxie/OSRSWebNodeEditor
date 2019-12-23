@@ -24,8 +24,8 @@ public abstract class Overlay implements MouseMotionListener, MouseListener {
     public abstract void draw(Graphics2D g);
 
     protected Chunk getHoveredChunk(){
-        int x = mapViewer.getMapPointOnMouse().getX() / WorldMap.TILE_SIZE;
-        int y = mapViewer.getMapPointOnMouse().getY() / WorldMap.TILE_SIZE;
+        int x = (int)(mapViewer.getMapPointOnMouse().getX() / WorldMap.TILE_SIZE);
+        int y = (int)(mapViewer.getMapPointOnMouse().getY() / WorldMap.TILE_SIZE);
 
         if(mapViewer.getWorldMap().getTiles().length <= x){
             return null;

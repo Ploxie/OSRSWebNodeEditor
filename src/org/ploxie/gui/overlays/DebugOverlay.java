@@ -9,8 +9,8 @@ import java.awt.event.MouseEvent;
 
 public class DebugOverlay extends Overlay {
 
-    private boolean drawHoveredTile = true;
-    private boolean drawHoveredChunk = true;
+    private boolean drawHoveredTile = false;
+    private boolean drawHoveredChunk = false;
     private boolean drawChunks = true;
 
     public DebugOverlay(WorldMapViewer mapViewer) {

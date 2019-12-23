@@ -28,7 +28,7 @@ public class Chunk {
         this.x = x;
         this.y = y;
 
-        this.rectangle = new Rectangle(x * WorldMap.TILE_SIZE, (y * WorldMap.TILE_SIZE), WorldMap.TILE_SIZE, WorldMap.TILE_SIZE);
+        this.rectangle = new Rectangle((int)(x * WorldMap.TILE_SIZE), (int)(y * WorldMap.TILE_SIZE), (int)WorldMap.TILE_SIZE, (int)WorldMap.TILE_SIZE);
     }
 
     public void load(WorldMapViewer viewer) {

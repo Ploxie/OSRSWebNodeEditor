@@ -9,11 +9,11 @@ import java.util.List;
 
 public class WorldMap {
 
-    public static final int MAP_WIDTH = 12544;
-    public static final int MAP_HEIGHT = 37120;
-    public static final int TILE_SIZE = 256;
-    public static final int OFFSET_X = 1152;
-    public static final int OFFSET_Y = -26625;
+    public static final double MAP_WIDTH = 12544;
+    public static final double MAP_HEIGHT = 37120;
+    public static final double TILE_SIZE = 256;
+    public static final double OFFSET_X = 1152;
+    public static final double OFFSET_Y = -26625;
 
     private Chunk[][] tiles;
     private int zoom;
@@ -37,10 +37,10 @@ public class WorldMap {
 
     public List<Chunk> getChunksInViewport(Rectangle viewport) {
 
-        int minX = Math.max(0, viewport.x / TILE_SIZE);
+        int minX = (int)Math.max(0, viewport.x / TILE_SIZE);
         int maxX = Math.min((int) ((viewport.x + viewport.getWidth()) / TILE_SIZE) + 1, tiles.length);
 
-        int minY = Math.max(0, viewport.y / TILE_SIZE);
+        int minY = (int)Math.max(0, viewport.y / TILE_SIZE);
         int maxY = Math.min((int) ((viewport.y + viewport.getHeight()) / TILE_SIZE) + 1, tiles[0].length);
 
         List<Chunk> list = new ArrayList<>();
@@ -55,42 +55,45 @@ public class WorldMap {
     }
 
     private double getUnitsPerPixel() {
+        return getUnitsPerPixel(zoom);
+    }
+
+    private double getUnitsPerPixel(int zoom) {
         return (TILE_SIZE * (Math.pow(2, -zoom)));
     }
 
     public double getChunkSize() {
-        double unitsPerPixel = getUnitsPerPixel();
-        return (TILE_SIZE * unitsPerPixel) / 4;
+        return getChunkSize(zoom);
+    }
+
+    public double getChunkSize(int zoom) {
+        double unitsPerPixel = getUnitsPerPixel(zoom);
+        return (TILE_SIZE * unitsPerPixel) / 4.0;
     }
 
     public double getPixelsPerTile() {
-        double tilesPerChunk = getChunkSize();
+        return getPixelsPerTile(zoom);
+    }
+
+    public double getPixelsPerTile(int zoom) {
+        double tilesPerChunk = getChunkSize(zoom);
         return TILE_SIZE / tilesPerChunk;
     }
 
-    public Point getWorldCoordinates(int x, int y) {
-        double tilesPerChunk = getChunkSize();
-        return new Point(x + WorldMap.OFFSET_X, WorldMap.MAP_HEIGHT - (y - (int) tilesPerChunk) + WorldMap.OFFSET_Y);
-    }
-
-    public Point getMapCoordinates(int x, int y) {
-        double pixelsPerTile = getPixelsPerTile();
-        return new Point((int) (x / pixelsPerTile), (int) (y / pixelsPerTile));
-    }
-
-    public Rectangle getTileOnPosition(int x, int y){
-        double pixelsPerTile = getPixelsPerTile();
-        Point mapTileCoords = getMapCoordinates(x, y);
-        Rectangle rect = new Rectangle(mapTileCoords.x * (int)pixelsPerTile, mapTileCoords.y * (int)pixelsPerTile, (int)pixelsPerTile, (int)pixelsPerTile);
-        return rect;
-    }
-
     public int getHeight() {
-        return (int) (MAP_HEIGHT / (TILE_SIZE * getUnitsPerPixel())) + 1;
+        return getHeight(zoom);
+    }
+
+    public int getHeight(int zoom) {
+        return (int) (MAP_HEIGHT / (TILE_SIZE * getUnitsPerPixel(zoom))) + 1;
     }
 
     public int getWidth() {
-        return (int) (MAP_WIDTH / (TILE_SIZE * getUnitsPerPixel())) + 1;
+        return getWidth(zoom);
+    }
+
+    public int getWidth(int zoom) {
+        return (int) (MAP_WIDTH / (TILE_SIZE * getUnitsPerPixel(zoom))) + 1;
     }
 
     public int getZoom() {
@@ -109,15 +112,22 @@ public class WorldMap {
     public static class MapPoint extends Pair<Integer, Integer> {
 
         private WorldMap map;
+        private int zoom = -1;
 
         public MapPoint(WorldMap map, int x, int y) {
             super(x, y);
             this.map = map;
         }
 
+        public MapPoint(WorldMap map,int zoom, int x, int y) {
+            super(x, y);
+            this.map = map;
+            this.zoom = zoom;
+        }
+
         public MapTile toMapTile(){
-            double pixelsPerTile = map.getPixelsPerTile();
-            return new MapTile(map, (int) (first / pixelsPerTile), (int) (second / pixelsPerTile));
+            double pixelsPerTile = map.getPixelsPerTile(getZoom());
+            return new MapTile(map,getZoom(), (int) (first / pixelsPerTile), (int) (second / pixelsPerTile));
         }
 
         public WorldTile toWorldTile(){
@@ -131,25 +141,45 @@ public class WorldMap {
         public int getY(){
             return getSecond();
         }
+
+        public int getZoom(){
+            if(zoom == -1){
+                return map.zoom;
+            }
+
+            return zoom;
+        }
     }
 
     public static class MapTile extends Pair<Integer, Integer> {
 
         private WorldMap map;
+        private int zoom = -1;
 
         public MapTile(WorldMap map, int x, int y) {
             super(x, y);
             this.map = map;
         }
 
+        public MapTile(WorldMap map,int zoom, int x, int y) {
+            super(x, y);
+            this.map = map;
+            this.zoom = zoom;
+        }
+
         public WorldTile toWorldTile(){
-            double tilesPerChunk = map.getChunkSize();
-            return new WorldTile(map, first + WorldMap.OFFSET_X, WorldMap.MAP_HEIGHT - (second - (int) tilesPerChunk) + WorldMap.OFFSET_Y);
+            double tilesPerChunk = map.getChunkSize(getZoom());
+            return new WorldTile(map,getZoom(), (int)(first + OFFSET_X), (int)(MAP_HEIGHT - (second - (int) tilesPerChunk) + OFFSET_Y));
+        }
+
+        public MapPoint toMapPoint(){
+            double pixelsPerTile = map.getPixelsPerTile(getZoom());
+            return new MapPoint(map,getZoom(), (int) (first * pixelsPerTile), (int) (second * pixelsPerTile));
         }
 
         public Rectangle getRectangle(){
-            double pixelsPerTile = map.getPixelsPerTile();
-            Rectangle rect = new Rectangle(first * (int)pixelsPerTile, second * (int)pixelsPerTile, (int)pixelsPerTile, (int)pixelsPerTile);
+            double pixelsPerTile = map.getPixelsPerTile(getZoom());
+            Rectangle rect = new Rectangle((int)(first * pixelsPerTile), (int)(second * pixelsPerTile), (int)pixelsPerTile, (int)pixelsPerTile);
             return rect;
         }
 
@@ -160,20 +190,39 @@ public class WorldMap {
         public int getY(){
             return getSecond();
         }
+
+        public int getZoom(){
+            if(zoom == -1){
+                return map.zoom;
+            }
+
+            return zoom;
+        }
     }
 
     public static class WorldTile extends Position {
 
         private WorldMap map;
+        private int zoom = -1;
 
         public WorldTile(WorldMap map, int x, int y) {
             super(x, y, map.plane);
             this.map = map;
         }
 
+        public WorldTile(WorldMap map,int zoom, int x, int y) {
+            super(x, y, map.plane);
+            this.map = map;
+            this.zoom = zoom;
+        }
+
         public MapTile toMapTile(){
-            double tilesPerChunk = map.getChunkSize();
-            return new MapTile(map, first - WorldMap.OFFSET_X, WorldMap.MAP_HEIGHT - (second + (int) tilesPerChunk) - WorldMap.OFFSET_Y);
+            return toMapTile(getZoom());
+        }
+
+        public MapTile toMapTile(int zoom){
+            double tilesPerChunk = map.getChunkSize(zoom);
+            return new MapTile(map,getZoom(), (int)(first - OFFSET_X), (int)(MAP_HEIGHT - (second - OFFSET_Y - (int)tilesPerChunk)));
         }
 
         public int getX(){
@@ -182,6 +231,14 @@ public class WorldMap {
 
         public int getY(){
             return getSecond();
+        }
+
+        public int getZoom(){
+            if(zoom == -1){
+                return map.zoom;
+            }
+
+            return zoom;
         }
     }
 

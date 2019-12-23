@@ -47,6 +47,7 @@ public class WorldMapViewer extends ZoomablePane {
         Controls controls = new Controls(this);
         add(controls);
 
+
     }
 
     @Override
@@ -72,9 +73,9 @@ public class WorldMapViewer extends ZoomablePane {
             if(chunk.getImage() == null){
                 continue;
             }
-            int x = (chunk.getX() * WorldMap.TILE_SIZE) + xOffset;
-            int y = (chunk.getY() * WorldMap.TILE_SIZE) + yOffset;
-            g2.drawImage(chunk.getImage(),x , y, WorldMap.TILE_SIZE , WorldMap.TILE_SIZE , null);
+            int x = (int)(chunk.getX() * WorldMap.TILE_SIZE) + xOffset;
+            int y = (int)(chunk.getY() * WorldMap.TILE_SIZE) + yOffset;
+            g2.drawImage(chunk.getImage(),x , y, (int)WorldMap.TILE_SIZE , (int)WorldMap.TILE_SIZE , null);
         }
 
         nodeOverlay.draw(g2);
@@ -97,25 +98,48 @@ public class WorldMapViewer extends ZoomablePane {
         return worldTileOnMouse;
     }
 
-    @Override
-    public void mouseWheelMoved(MouseWheelEvent e) {
-        double lastWidth = worldMap.getWidth();
-        double lastHeight = worldMap.getHeight();
+    public void setCenterTile(WorldMap.WorldTile worldTile){
+        setCenterTile(worldTile, zoom);
+    }
 
-        double xRel = (MouseInfo.getPointerInfo().getLocation().getX()) - (getLocationOnScreen().getX());
-        double yRel = (MouseInfo.getPointerInfo().getLocation().getY()) - (getLocationOnScreen().getY());
+    public void setCenterTile(WorldMap.WorldTile worldTile, int zoom){
 
-        zoom -= e.getWheelRotation();
-        zoom = Math.max(Math.min(zoom, MAX_ZOOM), MIN_ZOOM);
-        this.worldMap.loadTiles(zoom, plane);
+        double width = (worldMap.getWidth() * worldMap.getChunkSize() * worldMap.getPixelsPerTile());
+        double height = (worldMap.getHeight(zoom) * worldMap.getChunkSize(zoom) * worldMap.getPixelsPerTile(zoom));
 
-        double zoomDivX = (worldMap.getWidth() / lastWidth);
-        double zoomDivY = (worldMap.getHeight() / lastHeight);
+        WorldMap.MapPoint mapPoint = worldTile.toMapTile(zoom).toMapPoint();
 
-        xOffset = (zoomDivX) * (xOffset) + (1 - zoomDivX) * (xRel);
-        yOffset = (zoomDivY) * (yOffset) + (1 - zoomDivY) * (yRel);
+        double scaledX = mapPoint.getX() / width;
+        double scaledY = mapPoint.getY() / height;
+
+        xOffset = ((getWidth() / 2.0) - width) + (width * (1.0 - scaledX));
+        yOffset = ((getHeight() / 2.0) - height) + (height * (1.0 - scaledY));
 
         transform.setToTranslation(xOffset, yOffset);
+    }
+
+    @Override
+    public void mouseWheelMoved(MouseWheelEvent e) {
+        mouseMoved(e);
+
+        int oldZoom = zoom;
+
+        zoom -= e.getWheelRotation();
+        if(zoom > MAX_ZOOM){
+            zoom = MAX_ZOOM;
+            return;
+        }else if (zoom < MIN_ZOOM){
+            zoom = MIN_ZOOM;
+            return;
+        }
+
+        this.worldMap.loadTiles(zoom, plane);
+
+        int z = zoom == 4 || this.zoom == 8 ? oldZoom : zoom;
+
+        WorldMap.WorldTile worldTile = new WorldMap.WorldTile(worldMap, worldTileOnMouse.getX(), worldTileOnMouse.getY());
+        setCenterTile(worldTile, z);
+
         repaint();
     }
 
