@@ -9,10 +9,6 @@ import java.awt.*;
 
 public class Controls extends JPanel {
 
-    private JButton tileX;
-    private JButton tileY;
-    private JButton tileZ;
-
     private JButton increasePlane;
     private JButton decreasePlane;
 
@@ -21,41 +17,7 @@ public class Controls extends JPanel {
         setLayout(null);
         setOpaque(false);
         setBackground(new Color(0,0,0,0));
-
-        this.tileX = new JButton(){
-            @Override
-            public String getText() {
-                return ""+mapViewer.getWorldTileOnMouse().getX();
-            }
-        };
-        this.tileX.setLocation(10, 10);
-        this.tileX.setSize(60, 30);
-        this.tileX.setFocusable(false);
-
-        this.tileY = new JButton(){
-            @Override
-            public String getText() {
-                return ""+mapViewer.getWorldTileOnMouse().getY();
-            }
-        };
-        this.tileY.setLocation(69, 10);
-
-        this.tileY.setSize(60, 30);
-        this.tileY.setFocusable(false);
-
-        this.tileZ = new JButton(){
-            @Override
-            public String getText() {
-                return ""+mapViewer.getPlane();
-            }
-        };
-        this.tileZ.setLocation(128, 10);
-        this.tileZ.setSize(60, 30);
-        this.tileZ.setFocusable(false);
-
-        add(tileX);
-        add(tileY);
-        add(tileZ);
+        
 
         this.increasePlane = new JButton("+");
         this.increasePlane.addActionListener(e -> {

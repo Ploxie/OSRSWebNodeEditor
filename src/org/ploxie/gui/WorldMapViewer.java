@@ -1,6 +1,7 @@
 package org.ploxie.gui;
 
 import org.ploxie.gui.controls.Controls;
+import org.ploxie.gui.controls.PositionControl;
 import org.ploxie.gui.map.Chunk;
 import org.ploxie.gui.map.WorldMap;
 import org.ploxie.gui.overlays.DebugOverlay;
@@ -43,9 +44,13 @@ public class WorldMapViewer extends ZoomablePane {
 
         this.worldMap.loadTiles(zoom, plane);
 
-        setLayout(new GridLayout(0,1));
-        Controls controls = new Controls(this);
+        setLayout(null);
+        //Controls controls = new Controls(this);
+        PositionControl controls = new PositionControl(this);
         add(controls);
+
+
+
 
 
     }

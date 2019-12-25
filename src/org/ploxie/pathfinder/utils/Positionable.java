@@ -8,6 +8,7 @@ public interface Positionable {
     default int getX() {return getPosition().getFirst();}
     default int getY() {return getPosition().getSecond();}
     default int getZ() {return getPosition().getThird();}
+    default int getPlane() { return getZ();}
 
 
 
