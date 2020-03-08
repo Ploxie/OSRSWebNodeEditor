@@ -9,7 +9,7 @@ import java.awt.event.MouseEvent;
 
 public class DebugOverlay extends Overlay {
 
-    private boolean drawHoveredTile = false;
+    private boolean drawHoveredTile = true;
     private boolean drawHoveredChunk = false;
     private boolean drawChunks = true;
 

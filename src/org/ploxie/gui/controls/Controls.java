@@ -17,7 +17,6 @@ public class Controls extends JPanel {
         setLayout(null);
         setOpaque(false);
         setBackground(new Color(0,0,0,0));
-        
 
         this.increasePlane = new JButton("+");
         this.increasePlane.addActionListener(e -> {

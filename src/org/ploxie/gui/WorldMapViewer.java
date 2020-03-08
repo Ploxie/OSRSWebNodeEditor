@@ -2,11 +2,16 @@ package org.ploxie.gui;
 
 import org.ploxie.gui.controls.Controls;
 import org.ploxie.gui.controls.PositionControl;
+import org.ploxie.gui.controls.SettingsControl;
 import org.ploxie.gui.map.Chunk;
+import org.ploxie.gui.map.MapPosition;
 import org.ploxie.gui.map.WorldMap;
+import org.ploxie.gui.overlays.CollisionOverlay;
 import org.ploxie.gui.overlays.DebugOverlay;
 import org.ploxie.gui.overlays.Overlay;
 import org.ploxie.gui.overlays.WebOverlay;
+import org.ploxie.pathfinder.collision.RegionFileIO;
+import org.ploxie.pathfinder.utils.Position;
 
 import java.awt.*;
 import java.awt.event.MouseEvent;
@@ -17,8 +22,6 @@ import java.util.List;
 public class WorldMapViewer extends ZoomablePane {
 
     private WorldMap worldMap;
-    private Overlay debugOverlay;
-    private WebOverlay nodeOverlay;
 
     private static final int MIN_ZOOM = 3;
     private static final int MAX_ZOOM = 11;
@@ -32,6 +35,8 @@ public class WorldMapViewer extends ZoomablePane {
     protected WorldMap.MapTile mapTileOnMouse;
     protected WorldMap.WorldTile worldTileOnMouse;
 
+    protected List<Overlay> overlays = new ArrayList<>();
+
     public WorldMapViewer(double xOffset, double yOffset) {
         super(xOffset, yOffset);
         this.worldMap = new WorldMap();
@@ -39,20 +44,25 @@ public class WorldMapViewer extends ZoomablePane {
         this.mapTileOnMouse = this.mapPointOnMouse.toMapTile();
         this.worldTileOnMouse = this.mapTileOnMouse.toWorldTile();
 
-        this.debugOverlay = new DebugOverlay(this);
-        this.nodeOverlay = new WebOverlay(this, null);
+        addOverlay(new DebugOverlay(this));
+        addOverlay(new WebOverlay(this, null));
+        addOverlay(new CollisionOverlay(this, RegionFileIO.loadMapData()));
+
 
         this.worldMap.loadTiles(zoom, plane);
 
         setLayout(null);
-        //Controls controls = new Controls(this);
-        PositionControl controls = new PositionControl(this);
-        add(controls);
+        PositionControl positionControl = new PositionControl(this);
+        positionControl.setLocation(10, 10);
+        add(positionControl);
 
+        SettingsControl settingsControl = new SettingsControl(this);
+        settingsControl.setLocation(10, positionControl.getY()+positionControl.getHeight() + 10);
+        add(settingsControl);
+    }
 
-
-
-
+    public void addOverlay(Overlay overlay){
+        overlays.add(overlay);
     }
 
     @Override
@@ -83,8 +93,14 @@ public class WorldMapViewer extends ZoomablePane {
             g2.drawImage(chunk.getImage(),x , y, (int)WorldMap.TILE_SIZE , (int)WorldMap.TILE_SIZE , null);
         }
 
-        nodeOverlay.draw(g2);
-        debugOverlay.draw(g2);
+       for(Overlay overlay : overlays){
+           overlay.draw(g2);
+       }
+
+        WorldMap.MapPoint worldTile = new WorldMap.WorldTile(worldMap, worldMap.getZoom(), 3212, 3428).toMapTile().toMapPoint();
+        MapPosition mapPosition = new MapPosition(MapPosition.Type.WORLD, worldMap, new Position(3212, 3428, 0));
+
+        System.out.println(worldTile.getX()+", "+worldTile.getY()+" : "+mapPosition.getPixelPosition().getX()+", "+mapPosition.getPixelPosition().getY()+", "+mapPosition.getPixelPosition().getZ());
     }
 
     public Rectangle getViewport() {

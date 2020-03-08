@@ -18,7 +18,6 @@ public class PositionControl extends JPanel {
         this.mapViewer = mapViewer;
 
         setOpaque(false);
-        setLocation(10, 10);
         setSize(buttonWidth * 3, buttonHeight);
     }
 

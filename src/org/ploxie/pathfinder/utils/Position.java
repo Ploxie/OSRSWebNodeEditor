@@ -1,5 +1,8 @@
 package org.ploxie.pathfinder.utils;
 
+import org.ploxie.pathfinder.collision.Region;
+import org.ploxie.pathfinder.collision.Region2;
+
 public class Position extends Triplet<Integer, Integer, Integer> implements Positionable{
 
     protected int cached_hash = -1;
@@ -28,13 +31,21 @@ public class Position extends Triplet<Integer, Integer, Integer> implements Posi
     }
 
     public Position getTranslated(int x, int y){
-        return getTranslated(x,y, 0);
+        return getTranslated(x, y, 0);
     }
 
     public Position getTranslated(int x, int y, int z){
         Position result = clone();
         result.translate(x,y,z);
         return result;
+    }
+
+    public Position getRegionBase(){
+        return Region2.getRegionBase(getRegionID(), getZ());
+    }
+
+    public int getRegionID(){
+        return Region2.getRegionID(this);
     }
 
     protected Position clone() {

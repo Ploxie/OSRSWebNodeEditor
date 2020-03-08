@@ -3,8 +3,9 @@ package org.ploxie.gui.overlays;
 import org.ploxie.gui.map.Chunk;
 import org.ploxie.gui.map.WorldMap;
 import org.ploxie.gui.WorldMapViewer;
+import org.ploxie.pathfinder.utils.Position;
 
-import java.awt.Graphics2D;
+import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -16,12 +17,22 @@ public abstract class Overlay implements MouseMotionListener, MouseListener {
     public Overlay(WorldMapViewer mapViewer){
         this.mapViewer = mapViewer;
 
-
         mapViewer.addMouseMotionListener(this);
         mapViewer.addMouseListener(this);
     }
 
     public abstract void draw(Graphics2D g);
+
+    protected void drawTile(Graphics2D g, Position position){
+        Rectangle viewport = mapViewer.getViewport();
+
+        int xOffset = (int)-viewport.getX();
+        int yOffset = (int)-viewport.getY();
+
+        WorldMap.WorldTile tile = new WorldMap.WorldTile(mapViewer.getWorldMap(), position.getX(), position.getY());
+        Rectangle rectangle = tile.toMapTile().getRectangle();
+        g.drawRect(rectangle.x+xOffset,rectangle.y+yOffset,rectangle.width,rectangle.height);
+    }
 
     protected Chunk getHoveredChunk(){
         int x = (int)(mapViewer.getMapPointOnMouse().getX() / WorldMap.TILE_SIZE);

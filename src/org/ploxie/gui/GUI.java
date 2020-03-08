@@ -2,6 +2,7 @@ package org.ploxie.gui;
 
 import javax.swing.*;
 
+import org.pushingpixels.substance.api.SubstanceLookAndFeel;
 import org.pushingpixels.substance.api.skin.*;
 
 public class GUI extends JFrame {
@@ -9,7 +10,7 @@ public class GUI extends JFrame {
     private WorldMapViewer mapViewer;
 
     public GUI() {
-        try {
+        /*try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
@@ -19,10 +20,10 @@ public class GUI extends JFrame {
             e.printStackTrace();
         } catch (UnsupportedLookAndFeelException e) {
             e.printStackTrace();
-        }
+        }*/
 
-        setUndecorated(true);
-        getRootPane().setWindowDecorationStyle(JRootPane.FRAME);
+        //setUndecorated(true);
+        //getRootPane().setWindowDecorationStyle(JRootPane.FRAME);
         setResizable(false);
 
         setSize(800, 800);
@@ -62,8 +63,8 @@ public class GUI extends JFrame {
 
         SwingUtilities.invokeLater(() -> {
             try {
-                UIManager.setLookAndFeel(new SubstanceGraphiteLookAndFeel());
-                SwingUtilities.updateComponentTreeUI(this);
+                //UIManager.setLookAndFeel(new SubstanceGraphiteLookAndFeel());
+                //SwingUtilities.updateComponentTreeUI(this);
             } catch (Exception e) {
 
             }
